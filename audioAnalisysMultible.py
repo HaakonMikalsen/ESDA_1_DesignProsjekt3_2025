@@ -4,6 +4,9 @@ import wave
 import numpy as np
 import tqdm 
 
+
+
+# x
 with wave.open(r"./dataSource.wav") as f:
     metadata = f.getparams()
     frames = f.readframes(metadata.nframes)
@@ -17,10 +20,70 @@ normalized_amplitudes = pcm_samples / (2 ** 15)
 
 # normalized_amplitudes = normalized_amplitudes[0:(*int(len(normalized_amplitudes)/10))]
 dt = 1/metadata[2]
-t_vals = np.linspace(0,len(normalized_amplitudes)*dt,len(normalized_amplitudes))
+t_valsSource = np.linspace(0,len(normalized_amplitudes)*dt,len(normalized_amplitudes))
 
 
 sourceData = normalized_amplitudes.copy()
+# 1
+
+with wave.open(r"./filter  1 One sycle.wav") as f:
+    metadata = f.getparams()
+    frames = f.readframes(metadata.nframes)
+
+print(metadata)
+# print(frames)
+
+pcm_samples = np.frombuffer(frames, dtype="<h")
+normalized_amplitudes = pcm_samples / (2 ** 15)
+
+
+# normalized_amplitudes = normalized_amplitudes[0:(*int(len(normalized_amplitudes)/10))]
+dt = 1/metadata[2]
+t_valsFilter1 = np.linspace(0,len(normalized_amplitudes)*dt,len(normalized_amplitudes))
+
+
+filter1Data = normalized_amplitudes.copy()
+
+# 2
+
+with wave.open(r"./filter  2OneSycle.wav") as f:
+    metadata = f.getparams()
+    frames = f.readframes(metadata.nframes)
+
+print(metadata)
+# print(frames)
+
+pcm_samples = np.frombuffer(frames, dtype="<h")
+normalized_amplitudes = pcm_samples / (2 ** 15)
+
+
+# normalized_amplitudes = normalized_amplitudes[0:(*int(len(normalized_amplitudes)/10))]
+dt = 1/metadata[2]
+t_valsFilter2 = np.linspace(0,len(normalized_amplitudes)*dt,len(normalized_amplitudes))
+
+
+filter2Data = normalized_amplitudes.copy()
+
+##orginal
+with wave.open(r"./orginalSoundOneSycle.wav") as f:
+    metadata = f.getparams()
+    frames = f.readframes(metadata.nframes)
+
+print(metadata)
+# print(frames)
+
+pcm_samples = np.frombuffer(frames, dtype="<h")
+normalized_amplitudes = pcm_samples / (2 ** 15)
+
+
+# normalized_amplitudes = normalized_amplitudes[0:(*int(len(normalized_amplitudes)/10))]
+dt = 1/metadata[2]
+t_valsoriginal = np.linspace(0,len(normalized_amplitudes)*dt,len(normalized_amplitudes))
+
+
+origonalData = normalized_amplitudes.copy()
+
+
 
 
 
@@ -169,87 +232,27 @@ def bandStopSim(V_of_F,f,R,L,C):
 
 
 
-forierValues,freqValues = f_hat_whole_freq(sourceData,t_vals,0,2000)
+forierValuesSource,freqValuesSource = f_hat_whole_freq(sourceData,t_valsSource,0,3_000)
+forierValuesFilter1,freqValuesFilter1 = f_hat_whole_freq(filter1Data,t_valsFilter1,0,3_000)
+forierValuesFilte2,freqValuesFilter2 = f_hat_whole_freq(filter2Data,t_valsFilter2,0,3_000)
+forierValuesoriginal,freqValuesoriginal = f_hat_whole_freq(origonalData,t_valsoriginal,0,3_000)
 
-fourierMagnitudeData = calculateMagnitude(forierValues)
+fourierMagnitudeDataSource = calculateMagnitude(forierValuesSource)
+fourierMagnitudeDataFilter1= calculateMagnitude(forierValuesFilter1)
+fourierMagnitudeDataFilte2 = calculateMagnitude(forierValuesFilte2)
+fourierMagnitudeDataOriginal = calculateMagnitude(forierValuesoriginal)
+
+np.savetxt('data.csv', np.column_stack((freqValuesSource, fourierMagnitudeDataSource, fourierMagnitudeDataFilter1, fourierMagnitudeDataFilte2,fourierMagnitudeDataOriginal)), 
+           delimiter=',', fmt='%s', header="freqValuesSource,fourierValuesSource,fourierValuesFilter1,fourierValuesFilter2,original", comments='')
+
+# plt.gca().set_yscale('log')
 # plt.gca().set_xscale('log')
-foundFreqVals = serchForFreq(freqValues,fourierMagnitudeData)
-# print(foundFreqVals)
-print(f"Found {len(foundFreqVals[0])} frequnceis")
-for i in range(len(foundFreqVals[0])):
-    print(f"Found frequce: {foundFreqVals[0][i]}Hz with amplitude {foundFreqVals[1][i]}")
 plt.title("Forier samlet, justert for magnitude")
-plt.plot(freqValues,fourierMagnitudeData)
-# plt.plot(t_vals,sourceData)
+plt.plot(freqValuesSource,fourierMagnitudeDataSource,color="blue",label="x(f)")
+plt.plot(freqValuesFilter1,fourierMagnitudeDataFilter1,color="orange",label="y_1(f)")
+plt.plot(freqValuesFilter2,fourierMagnitudeDataFilte2,color="green", label="y(f)/y_2(f)")
 plt.grid()
+plt.legend()
 plt.axvline(color = "black")
 plt.axhline(color = "black")
 plt.show()
-
-
-# R = 1e3
-# L = 0.098 #sett fra funnet verdi
-# resonansFrekvens = 720
-# C = 1/(L*fToW(resonansFrekvens)**2)
-
-# forierValuesBandStop = bandStopSim(forierValues,freqValues,R,L,C)
-# fourierMagnitudeDataBandStop = calculateMagnitude(forierValuesBandStop)
-# plt.plot(freqValues,fourierMagnitudeDataBandStop)
-
-# plt.grid()
-# plt.axvline(color = "black")
-# plt.axhline(color = "black")
-
-
-# #plt.show()
-
-# num_samples = 44100*10  # Number of samples
-
-# amplitudeMax = 16000  # Amplitude
-# sampling_rate = 44100  # Sampling rate
-# # reversed_transfor_with_bandpass = f(forierValuesBandStop,freqValues,t_vals)
-
-# # Ensure proper sample count for time values
-# t_vals = np.linspace(0,10*metadata.framerate,10 *metadata.framerate )
-# # t_vals = np.array([t_vals for i in range(len(freqValues))])
-# adjustedBandPassOutput = np.zeros(len(t_vals))
-
-# for i in tqdm.trange(len(freqValues), desc="Processing"):
-#         freq = freqValues[i]
-#         adjustedBandPassOutput+=np.sin(t_vals*2*np.pi*freq)*fourierMagnitudeDataBandStop[i]
-# print(adjustedBandPassOutput)
-# # Adjust the amplitude before saving
-# adjustedBandPassOutput = adjustedBandPassOutput * (2**15 / np.max(np.abs(adjustedBandPassOutput)))
-
-# # Convert to 16-bit PCM format
-# scaled_output = np.int16(adjustedBandPassOutput)
-
-# # Save as a WAV file
-# with wave.open('bandpassSimOut2.wav', 'wb') as wav_file:
-#     wav_file.setnchannels(1)  # Mono
-#     wav_file.setsampwidth(2)  # 16-bit PCM
-#     wav_file.setframerate(metadata.framerate)  # Keep original sample rate
-#     wav_file.writeframes(scaled_output.tobytes())
-
-# # # Debugging: Plot original vs. reconstructed signals
-# # plt.figure(figsize=(10, 4))
-# # plt.plot(t_vals, sourceData, label="Original Signal", alpha=0.7)
-# # plt.plot(t_vals, reversed_transfor_with_bandpass[0], label="Filtered Signal", alpha=0.7)
-# # plt.legend()
-# # plt.xlabel("Time (s)")
-# # plt.ylabel("Amplitude")
-# # plt.title("Comparison of Original and Filtered Signals")
-# # plt.grid()
-# # plt.show()
-
-
-# # adjust = np.average(np.abs(sourceData))/np.average(np.abs(reversed_transfor_with_bandpass[0])) 
-
-# # plt.subplot(1,3,1)
-# # plt.plot(t_vals,reversed_transfor_with_bandpass[0]*adjust)
-# # plt.subplot(1,3,2)
-# # plt.plot(t_vals,sourceData,color="red")
-# # plt.subplot(1,3,3)
-# # plt.plot(t_vals,sourceData,color="red")
-# # plt.plot(t_vals,reversed_transfor_with_bandpass[0]*adjust)
-# # #plt.show()

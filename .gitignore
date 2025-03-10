@@ -2,3 +2,17 @@ bin
 lib
 share
 pyvenv.cfg
+
+*.wav
+!lydfiler som er brukt/*.wav
+
+*.mp3
+!lydfiler som er brukt/*.mp3
+
+*.png
+*.jpg
+!brukteBilder/*.png
+!brukteBilder/*.jpg
+
+*.csv
+!dataBrukt/*.csv
