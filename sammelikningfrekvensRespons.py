@@ -65,9 +65,9 @@ HTeoretisk = v2(f_verdier,R,L,C)*H1Teoretisk
 
 
 
+plt.style.use("seaborn-v0_8-dark")
 plt.gca().set_xscale("log")
 
-plt.style.use("seaborn-v0_8-dark")
 plt.title("Teoretiske og målte frekvensrespons til filter")
 plt.plot(f,H_1,color="green",label="H_1/H_2(w) målt")
 plt.plot(f,H,color="orange",label="H(w) målt")
@@ -79,8 +79,9 @@ plt.axvline(color = "black")
 plt.axvline(x=720,color = "red",linestyle ="--",linewidth=1,label="720Hz/resonansfrekvens")
 # plt.gca().yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1f '))
 plt.gca().xaxis.set_major_formatter(mticker.FormatStrFormatter('%.1f Hz'))
+plt.gca().yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1f dB'))
 plt.xlabel("frekvens [Hz]")
-plt.ylabel("Amplitude")
+plt.ylabel("Demping")
 
 
 

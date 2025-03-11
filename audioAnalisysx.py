@@ -20,20 +20,22 @@ dataFile.close()
 
 
 
+plt.style.use("seaborn-v0_8-dark")
 
 
-# plt.gca().set_yscale('log')
+plt.gca().set_yscale('log')
 # plt.gca().set_xscale('log')
 
-plt.style.use("seaborn-v0_8-dark")
 plt.title("Fourier analyse av x(t)")
 plt.plot(f,x,color="blue",label="x(f)")
 plt.grid()
 plt.axhline(color = "black")
 plt.axvline(color = "black")
-plt.axvline(x=720,color = "red",linestyle ="--",linewidth=1,label="720Hz")
+# plt.axvline(x=720,color = "red",linestyle ="--",linewidth=1,label="720Hz")
 # plt.gca().yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1f '))
-plt.gca().xaxis.set_major_formatter(mticker.FormatStrFormatter('%.1f Hz'))
+plt.xticks([500*i for i in range(5)])
+plt.gca().xaxis.set_major_formatter(mticker.FormatStrFormatter('%.0f Hz'))
+plt.scatter(720,np.max(x),color="red")
 plt.xlabel("frekvens [Hz]")
 plt.ylabel("Amplitude")
 
